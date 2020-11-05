@@ -14,10 +14,12 @@
     }
 
     body {
-      background-color: #161616;
+      background-color: #1b1e1e;
+      background-image: linear-gradient(315deg, #1b1e1e 0%, #8b939a 90%);
       color: white;
       font-family: 'Raleway', sans-serif;
       font-size: calc(100vw / 10);
+
     }
 
     div.container {
@@ -27,64 +29,64 @@
       height: 100vh;
     }
 
-    .animated>span:nth-child(1) {
+    .animated-logo-text>span:nth-child(1) {
       font-weight: 600;
+    }
+
+    .animated-logo-text {
+      user-select: none;
+      white-space: nowrap;
+      animation: shake 2.5s linear forwards;
+    }
+
+    @keyframes glow {
+      from {
+        text-shadow: 2px 2px 5px #55efc4;
+      }
+
+      to {
+        text-shadow: 2px 2px 10px #55efc4;
+      }
     }
   </style>
 </head>
 
 <body>
-  <!-- <div>
-    <span>EZYO</span><span>Studio</span>
-    <span>EZYO</span><span>Studio</span>
-  </div> -->
   <div class="container">
     <div class="animated-logo-text">
-      <div class="animated"><span>EZYO</span><span>Studio</span></div>
+      <span>EZYO</span><span>Studio</span>
     </div>
-
   </div>
+
+
   <script src="../src/typing-animator.js"></script>
   <script>
     document.addEventListener("DOMContentLoaded", function () {
-
-
-      let delay = 250;
-
       const animator = new TypingAnimator({
         fixedWidth: true,
-        target: 'span:nth-child(2)',
+        target: '.animated-logo-text span:nth-child(2)',
         loop: true,
         loopDelay: 2500,
+        stepDelay: 250,
       }, [
         { wait: 2500 },
         "addCursor",
         { wait: 750 },
         { text: 'Studio' },
-        { wait: delay },
         { text: 'Studi' },
-        { wait: delay },
         { text: 'Stud' },
-        { wait: delay },
         { text: 'Stud.' },
-        { wait: delay },
         { text: 'Stud.i' },
-        { wait: delay },
         { text: 'Stud.io' },
         "removeCursor",
         { wait: 2500 },
         "addCursor",
         { wait: 750 },
         { text: 'Stud.i' },
-        { wait: delay },
         { text: 'Stud.' },
-        { wait: delay },
         { text: 'Stud' },
-        { wait: delay },
         { text: 'Stud' },
-        { wait: delay },
         { text: 'Studi' },
-        { wait: delay },
         { text: 'Studio' },
         "removeCursor",
       ]);
