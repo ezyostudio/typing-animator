@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Raleway:wght@400;500;600&display=swap');
+
+    * {
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: #161616;
+      color: white;
+      font-family: 'Raleway', sans-serif;
+      font-size: calc(100vw / 10);
+    }
+
+    div.container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .animated>span:nth-child(1) {
+      font-weight: 600;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- <div>
+    <span>EZYO</span><span>Studio</span>
+    <span>EZYO</span><span>Studio</span>
+  </div> -->
+  <div class="container">
+    <div class="animated-logo-text">
+      <div class="animated"><span>EZYO</span><span>Studio</span></div>
+    </div>
+
+  </div>
+  <script src="../src/typing-animator.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+
+      let delay = 250;
+
+      const animator = new TypingAnimator({
+        fixedWidth: true,
+        target: 'span:nth-child(2)',
+        loop: true,
+        loopDelay: 2500,
+      }, [
+        { wait: 2500 },
+        "addCursor",
+        { wait: 750 },
+        { text: 'Studio' },
+        { wait: delay },
+        { text: 'Studi' },
+        { wait: delay },
+        { text: 'Stud' },
+        { wait: delay },
+        { text: 'Stud.' },
+        { wait: delay },
+        { text: 'Stud.i' },
+        { wait: delay },
+        { text: 'Stud.io' },
+        "removeCursor",
+        { wait: 2500 },
+        "addCursor",
+        { wait: 750 },
+        { text: 'Stud.i' },
+        { wait: delay },
+        { text: 'Stud.' },
+        { wait: delay },
+        { text: 'Stud' },
+        { wait: delay },
+        { text: 'Stud' },
+        { wait: delay },
+        { text: 'Studi' },
+        { wait: delay },
+        { text: 'Studio' },
+        "removeCursor",
+      ]);
+
+      animator.addEventListener('animation:start', () => console.log('animation:start'));
+      animator.addEventListener('animation:end', () => console.log('animation:end'));
+      animator.addEventListener('animation:loop', () => console.log('animation:loop'));
+
+      animator.animate();
+    });
+  </script>
+</body>
+
+</html>
