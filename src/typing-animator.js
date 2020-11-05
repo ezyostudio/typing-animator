@@ -80,7 +80,7 @@ class TypingAnimator extends TypingAnimatorEventTarget {
 
 
       var cursorStyle = document.createElement('style');
-      cursorStyle.innerHTML = this.constructor._cursorStyle;
+      cursorStyle.innerHTML = this.constructor._cursorStyle.replace('{blinkingDelay}', options.blinkingDelay);
       document.querySelector('head').append(cursorStyle);
 
       if (options.cursor || options.animatedCursor) {
@@ -116,7 +116,9 @@ class TypingAnimator extends TypingAnimatorEventTarget {
     cursor: false,
     animatedCursor: false,
     loop: false,
-    loopDelay: 0
+    stepDelay: 1000,
+    loopDelay: 0,
+    blinkingDelay: '1s'
   };
 
   static Commands = {
@@ -143,11 +145,12 @@ class TypingAnimator extends TypingAnimatorEventTarget {
   static _cursorStyle = `
   .w-cursor::after {
     content: "|";
+    position:absolute;
   }
 
   .w-animated-cursor::after {
-    -webkit-animation: blink 1s infinite step-start;
-    animation: blink 1s infinite step-start;
+    -webkit-animation: blink {blinkingDelay} infinite step-start;
+    animation: blink {blinkingDelay} infinite step-start;
   }
 
   @-webkit-keyframes blink {
@@ -167,7 +170,7 @@ class TypingAnimator extends TypingAnimatorEventTarget {
     this.dispatchEvent({
       type: 'animation:start'
     });
-    for (const step of this.steps) {
+    for (const [index, step] of this.steps.entries()) {
       let command, value;
 
       if (typeof step == 'string') {
@@ -179,6 +182,8 @@ class TypingAnimator extends TypingAnimatorEventTarget {
 
       if (command in this.constructor.Commands) {
         await this.constructor.Commands[command](value, this.options);
+        if (this.options.stepDelay > 0 && !(['wait', false].includes(this._getStepName(index + 1))))
+          await this.constructor.Commands.wait(this.options.stepDelay, this.options);
       } else {
         console.warn(`TypingAnimator: Error unknown command "${command}"`)
       }
@@ -205,5 +210,13 @@ class TypingAnimator extends TypingAnimatorEventTarget {
       }
       return maxValue
     }, '')
+  }
+
+  _getStepName(index) {
+    if (!(this.steps[index]))
+      return false
+    if (typeof this.steps[index] == 'string')
+      return this.steps[index]
+    return Object.keys(this.steps[index])[0];
   }
 }
