@@ -1,0 +1,20 @@
+{
+  "name": "@ezyostudio/typing-animator",
+  "version": "0.1.0",
+  "unpkg": "dist/my-component.min.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ezyostudio/typing-animator-js.git"
+  },
+  "author": "Zao Soula",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ezyostudio/typing-animator-js/issues"
+  },
+  "homepage": "https://github.com/ezyostudio/typing-animator-js#readme",
+  "main": "index.js",
+  "description": ""
+}
