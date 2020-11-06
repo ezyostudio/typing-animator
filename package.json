@@ -1,7 +1,8 @@
 {
   "name": "@ezyostudio/typing-animator",
   "version": "0.1.1",
-  "unpkg": "dist/my-component.min.js",
+  "main": "src/typing-animator.js",
+  "unpkg": "src/typing-animator.js",
   "scripts": {
     "test": "echo \"Error: no test specified\""
   },
@@ -15,6 +16,5 @@
     "url": "https://github.com/ezyostudio/typing-animator-js/issues"
   },
   "homepage": "https://github.com/ezyostudio/typing-animator-js#readme",
-  "main": "index.js",
   "description": ""
 }
