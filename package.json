@@ -1,6 +1,6 @@
 {
   "name": "@ezyostudio/typing-animator",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "unpkg": "dist/my-component.min.js",
   "scripts": {
     "test": "echo \"Error: no test specified\""
