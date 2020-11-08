@@ -1,7 +1,5 @@
 class TypingAnimatorEventTarget {
 
-  listeners = null
-
   constructor() {
     this.listeners = {}
   }
@@ -56,7 +54,7 @@ class TypingAnimator extends TypingAnimatorEventTarget {
 
     this.steps = steps;
 
-    let options = this.constructor.DefaultOptions;
+    let options = TypingAnimator.prototype.DefaultOptions;
 
     Object.assign(options, opts);
 
@@ -80,7 +78,7 @@ class TypingAnimator extends TypingAnimatorEventTarget {
 
 
       var cursorStyle = document.createElement('style');
-      cursorStyle.innerHTML = this.constructor._cursorStyle.replace('{blinkingDelay}', options.blinkingDelay);
+      cursorStyle.innerHTML = TypingAnimator.prototype._cursorStyle.replace('{blinkingDelay}', options.blinkingDelay);
       document.querySelector('head').append(cursorStyle);
 
       if (options.cursor || options.animatedCursor) {
@@ -107,64 +105,8 @@ class TypingAnimator extends TypingAnimatorEventTarget {
     }
 
     this.options = options;
+    this.storage = {};
   }
-
-  static DefaultOptions = {
-    fixedWidth: false,
-    target: '',
-    revert: false,
-    cursor: false,
-    animatedCursor: false,
-    loop: false,
-    stepDelay: 1000,
-    loopDelay: 0,
-    blinkingDelay: '1s'
-  };
-
-  static Commands = {
-    wait(value, _options) {
-      return new Promise(resolve => setTimeout(resolve, value))
-    },
-    text(value, options) {
-      options.target.querySelector(':scope > ' + options.targetNodeName).textContent = value;
-    },
-    addCursor(_value, options) {
-      options.target.querySelector(':scope > ' + options.targetNodeName).classList.add('w-cursor');
-    },
-    addAnimatedCursor(_value, options) {
-      options.target.querySelector(':scope > ' + options.targetNodeName).classList.add('w-animated-cursor');
-    },
-    removeCursor(_value, options) {
-      options.target.querySelector(':scope > ' + options.targetNodeName).classList.remove('w-cursor');
-    },
-    removeAnimatedCursor(_value, options) {
-      options.target.querySelector(':scope > ' + options.targetNodeName).classList.remove('w-animated-cursor');
-    },
-  };
-
-  static _cursorStyle = `
-  .w-cursor::after {
-    content: "|";
-    position:absolute;
-  }
-
-  .w-animated-cursor::after {
-    -webkit-animation: blink {blinkingDelay} infinite step-start;
-    animation: blink {blinkingDelay} infinite step-start;
-  }
-
-  @-webkit-keyframes blink {
-    50% {
-      opacity: 0;
-    }
-  }
-
-  @keyframes blink {
-    50% {
-      opacity: 0;
-    }
-  }`;
-
 
   async animate() {
     this.dispatchEvent({
@@ -180,17 +122,17 @@ class TypingAnimator extends TypingAnimatorEventTarget {
         value = step[command];
       }
 
-      if (command in this.constructor.Commands) {
-        await this.constructor.Commands[command](value, this.options);
+      if (command in TypingAnimator.prototype.Commands) {
+        await TypingAnimator.prototype.Commands[command](value, this);
         if (this.options.stepDelay > 0 && !(['wait', false].includes(this._getStepName(index + 1))))
-          await this.constructor.Commands.wait(this.options.stepDelay, this.options);
+          await TypingAnimator.prototype.Commands.wait(this.options.stepDelay, this);
       } else {
         console.warn(`TypingAnimator: Error unknown command "${command}"`)
       }
     }
     if (this.options.loop) {
       if (this.options.loopDelay > 0)
-        await this.constructor.Commands.wait(this.options.loopDelay, this.options);
+        await TypingAnimator.prototype.Commands.wait(this.options.loopDelay, this);
       this.dispatchEvent({
         type: 'animation:loop'
       });
@@ -204,7 +146,7 @@ class TypingAnimator extends TypingAnimatorEventTarget {
 
   _getLongestText() {
     return this.steps.reduce((maxValue, step) => {
-      if (Object.keys(step)[0] == 'text') {
+      if (['text', 'from', 'to'].includes(Object.keys(step)[0])) {
         let value = step[Object.keys(step)[0]]
         return (value.length > maxValue.length) ? value : maxValue;
       }
@@ -220,3 +162,99 @@ class TypingAnimator extends TypingAnimatorEventTarget {
     return Object.keys(this.steps[index])[0];
   }
 }
+
+TypingAnimator.prototype.DefaultOptions = {
+  fixedWidth: false,
+  target: '',
+  revert: false,
+  cursor: false,
+  animatedCursor: false,
+  loop: false,
+  stepDelay: 1000,
+  loopDelay: 0,
+  blinkingDelay: '1s'
+};
+
+TypingAnimator.prototype.Commands = {
+  wait(value, _instance) {
+    return new Promise(resolve => setTimeout(resolve, value))
+  },
+  text(value, instance) {
+    instance.options.target.querySelector(':scope > ' + instance.options.targetNodeName).textContent = value;
+  },
+  from(value, instance) {
+    instance.options.target.querySelector(':scope > ' + instance.options.targetNodeName).textContent = value;
+    instance.storage.from = value;
+    console.log(this);
+  },
+  async to(value, instance) {
+    console.log('from', instance.storage.from, '-->', value);
+    let from = instance.storage.from;
+    let to = value;
+    let prefix = false;
+    let suffix = false;
+
+    if(from.length<to.length) {
+      if(to.startsWith(from)) {
+        prefix = from;
+        to = to.replace(from, '');
+      }else if(to.endsWith(from)){
+        suffix = from;
+        to = to.replace(from, '');
+        console.log('EHEH', to);
+      }
+    }
+
+    console.log(prefix, suffix);
+    
+    for (const letter of to.split('')) {
+      if (suffix){
+        suffix = letter + suffix + '';
+        console.log(suffix);
+        instance.options.target.querySelector(':scope > ' + instance.options.targetNodeName).textContent = suffix;
+      }else if (prefix){
+        prefix += letter;
+        instance.options.target.querySelector(':scope > ' + instance.options.targetNodeName).textContent = prefix;
+      }
+
+      if (instance.options.stepDelay > 0)
+        await instance.constructor.Commands.wait(instance.options.stepDelay, instance);
+    }
+  },
+  addCursor(_value, instance) {
+    console.log(instance);
+    instance.options.target.querySelector(':scope > ' + instance.options.targetNodeName).classList.add('w-cursor');
+  },
+  addAnimatedCursor(_value, instance) {
+    instance.options.target.querySelector(':scope > ' + instance.options.targetNodeName).classList.add('w-animated-cursor');
+  },
+  removeCursor(_value, instance) {
+    instance.options.target.querySelector(':scope > ' + instance.options.targetNodeName).classList.remove('w-cursor');
+  },
+  removeAnimatedCursor(_value, instance) {
+    instance.options.target.querySelector(':scope > ' + instance.options.targetNodeName).classList.remove('w-animated-cursor');
+  },
+};
+
+TypingAnimator.prototype._cursorStyle = `
+.w-cursor::after {
+  content: "|";
+  position:absolute;
+}
+
+.w-animated-cursor::after {
+  -webkit-animation: blink {blinkingDelay} infinite step-start;
+  animation: blink {blinkingDelay} infinite step-start;
+}
+
+@-webkit-keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}`;
